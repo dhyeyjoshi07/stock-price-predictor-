@@ -10,20 +10,27 @@ from datetime import timedelta
 stock_symbol = input("Enter the stock symbol (e.g., AAPL for Apple): ")
 
 # Fetch historical stock data
-data = yf.download(stock_symbol, start='2000-01-01', end='2026-03-15')
+data = yf.download(stock_symbol, start='2000-01-01', end='2026-05-01', auto_adjust=True)
 
-# Use only 'Close' price for prediction
-data = data[['Close']]
+# If data is MultiIndex (common in recent yfinance versions), flatten it
+if isinstance(data.columns, pd.MultiIndex):
+    data.columns = data.columns.get_level_values(0)
+
+# Use 'Close' price and calculate moving averages
+data = data[['Close']].copy()
+data['MA10'] = data['Close'].rolling(window=10).mean()
+data['MA50'] = data['Close'].rolling(window=50).mean()
 
 # Create a column for the "Tomorrow" stock price (next day's close)
 data['Tomorrow'] = data['Close'].shift(-1)
 
-# Drop the last row since it doesn't have a "Tomorrow" value
+# Drop rows with NaN values (from rolling windows and the shift)
 data.dropna(inplace=True)
 
 # Features and labels
-X = data[['Close']]  # Features: Close price
-y = data['Tomorrow']  # Labels: Next day's close price
+feature_cols = ['Close', 'MA10', 'MA50']
+X = data[feature_cols]
+y = data['Tomorrow']
 
 # Split the data into training and testing sets
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, shuffle=False)
@@ -32,21 +39,27 @@ X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, shuffle
 model = LinearRegression()
 model.fit(X_train, y_train)
 
-# Predict stock prices for the test set
-y_pred = model.predict(X_test)
-
 # Evaluate the model (R-squared score)
 print(f"\nModel R-squared: {model.score(X_test, y_test)}")
 
-# --- Prediction for 3 months ---
-last_price = data['Close'].iloc[-1]
-predictions = []
+# --- Prediction for future days ---
 prediction_days = 500
+current_window = data['Close'].iloc[-50:].values.flatten().tolist()
+predictions = []
 
 for i in range(prediction_days):
-    prediction = model.predict(np.array(last_price).reshape(1, -1))
-    predictions.append(prediction[0])
-    last_price = prediction[0]
+    # Calculate MAs based on current window
+    current_close = current_window[-1]
+    ma10 = np.mean(current_window[-10:])
+    ma50 = np.mean(current_window[-50:])
+
+    # Prepare features for prediction as a DataFrame to match training feature names
+    X_curr = pd.DataFrame([[current_close, ma10, ma50]], columns=feature_cols)
+    next_pred = model.predict(X_curr)[0]
+
+    predictions.append(next_pred)
+    current_window.append(next_pred)
+    current_window.pop(0) # Maintain window size
 
 # Create a future date range
 last_date = data.index[-1]
@@ -56,10 +69,10 @@ future_dates = [last_date + timedelta(days=i) for i in range(1, prediction_days 
 predicted_data = pd.DataFrame(predictions, index=future_dates, columns=['Predicted Close'])
 
 # --- Plot ---
-plt.figure(figsize=(10, 6))
-plt.plot(data.index, data['Close'], label='Historical Data', color='yellow')
-plt.plot(predicted_data.index, predicted_data['Predicted Close'], label='Predicted Price (Next 500 Days)', color='black')
-plt.title(f'{stock_symbol} Stock Price Prediction')
+plt.figure(figsize=(12, 6))
+plt.plot(data.index, data['Close'], label='Historical Data', color='blue', alpha=0.6)
+plt.plot(predicted_data.index, predicted_data['Predicted Close'], label=f'Predicted Price ({prediction_days} Days)', color='red', linestyle='--')
+plt.title(f'{stock_symbol} Stock Price Prediction with Moving Averages')
 plt.xlabel('Date')
 plt.ylabel('Price (USD)')
 plt.legend()
