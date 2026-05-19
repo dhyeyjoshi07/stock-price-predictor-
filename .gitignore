@@ -1,45 +1,74 @@
-# Python
+# Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
+*$py.class
 *.pyo
 *.pyd
-.Python
 
 # Virtual environments
 venv/
 env/
 .env/
 .venv/
+ENV/
+env.bak/
+venv.bak/
 
-# Jupyter Notebooks (if you use them)
-.ipynb_checkpoints/
-*.ipynb
+# Environment variables
+.env
+.env.local
+.env.production
 
 # Distribution / packaging
 dist/
 build/
 *.egg-info/
+*.egg
+.eggs/
+wheels/
 
-# Environment variables (API keys, secrets)
-.env
-.env.local
+# Unit test / coverage
+.coverage
+.pytest_cache/
+htmlcov/
+.tox/
+nosetests.xml
+coverage.xml
+*.cover
 
-# OS files
-.DS_Store        # Mac
-Thumbs.db        # Windows
-desktop.ini
+# Jupyter Notebooks
+.ipynb_checkpoints/
+*.ipynb
 
-# IDE / Editor settings
+# IDE / Editor
 .vscode/
 .idea/
 *.sublime-project
 *.sublime-workspace
+*.swp
+*.swo
 
-# Matplotlib output (if you save charts)
+# OS files
+.DS_Store
+.DS_Store?
+._*
+Thumbs.db
+desktop.ini
+ehthumbs.db
+
+# Logs
+*.log
+logs/
+
+# Output files
 *.png
 *.jpg
+*.jpeg
 *.pdf
-
-# Data files (optional — remove if you want to track them)
 *.csv
 *.xlsx
+
+# MyPy
+.mypy_cache/
+.dmypy.json
+dmypy.json
