@@ -69,8 +69,8 @@ Matplotlib Visualization
 **1. Clone the repository**
 
 ```bash
-git clone https://github.com/your-username/stock-price-predictor.git
-cd stock-price-predictor
+git clone https://github.com/dhyeyjoshi07/stock-price-predictor-.git
+cd stock-price-predictor-
 ```
 
 **2. Install dependencies**
