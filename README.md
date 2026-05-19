@@ -1,98 +1,167 @@
 # 📈 Stock Price Predictor
 
-A machine learning project that uses **Linear Regression** to predict future stock prices based on historical closing data fetched from Yahoo Finance.
+<p align="center">
+  <img src="https://img.shields.io/badge/Python-3.7+-3776AB?style=for-the-badge&logo=python&logoColor=white"/>
+  <img src="https://img.shields.io/badge/scikit--learn-ML Model-F7931E?style=for-the-badge&logo=scikit-learn&logoColor=white"/>
+  <img src="https://img.shields.io/badge/yfinance-Stock Data-00897B?style=for-the-badge"/>
+  <img src="https://img.shields.io/badge/License-MIT-green?style=for-the-badge"/>
+</p>
+
+<p align="center">
+  A Python tool that uses <strong>Linear Regression</strong> and <strong>Moving Averages</strong> to forecast stock prices up to 500 days into the future — powered by Yahoo Finance data.
+</p>
 
 ---
 
-## 🚀 Features
+## 📌 Table of Contents
 
-- Fetches real-time historical stock data using `yfinance`
-- Trains a Linear Regression model on closing prices
-- Predicts stock prices for the next **500 days**
-- Visualizes historical vs predicted prices with `matplotlib`
-- Works with **any stock symbol** (e.g., AAPL, TSLA, GOOGL)
-
----
-
-## 🛠️ Tech Stack
-
-| Library | Purpose |
-|---|---|
-| `yfinance` | Download historical stock data |
-| `pandas` | Data manipulation |
-| `numpy` | Numerical operations |
-| `scikit-learn` | Linear Regression model |
-| `matplotlib` | Plotting charts |
+- [Features](#-features)
+- [How It Works](#-how-it-works)
+- [Installation](#-installation)
+- [Usage](#-usage)
+- [Output](#-output)
+- [Limitations](#-limitations)
+- [Disclaimer](#-disclaimer)
+- [License](#-license)
 
 ---
 
-## ⚙️ Installation
+## ✨ Features
 
-1. **Clone the repository**
-   ```bash
-   git clone https://github.com/YOUR_USERNAME/stock-price-predictor.git
-   cd stock-price-predictor
-   ```
-
-2. **Install dependencies**
-   ```bash
-   pip install -r requirements.txt
-   ```
+- 🔍 Fetches historical stock data automatically via `yfinance`
+- 📊 Computes **10-day** and **50-day** moving averages as model features
+- 🤖 Trains a **Linear Regression** model on historical close prices
+- 🔮 Predicts prices up to **500 days** into the future
+- 📉 Plots historical vs. predicted prices with `matplotlib`
 
 ---
 
-## ▶️ Usage
+## ⚙️ How It Works
 
-Run the script:
+```
+Historical Data (yfinance)
+        │
+        ▼
+Feature Engineering: Close, MA10, MA50
+        │
+        ▼
+Train Linear Regression (70% train / 30% test)
+        │
+        ▼
+Iterative 500-Day Forecast
+        │
+        ▼
+Matplotlib Visualization
+```
+
+| Step | Detail |
+|------|--------|
+| **Data Source** | Yahoo Finance via `yfinance` (Jan 2000 – May 2026) |
+| **Features** | `Close`, `MA10` (10-day avg), `MA50` (50-day avg) |
+| **Target** | Next day's closing price (`Close.shift(-1)`) |
+| **Model** | `sklearn.LinearRegression` |
+| **Forecast** | Each prediction feeds back into the rolling window |
+
+---
+
+## 🛠️ Installation
+
+**1. Clone the repository**
+
 ```bash
-python stock_prediction.py
+git clone https://github.com/your-username/stock-price-predictor.git
+cd stock-price-predictor
 ```
 
-When prompted, enter a stock symbol:
-```
-Enter the stock symbol (e.g., AAPL for Apple): AAPL
+**2. Install dependencies**
+
+```bash
+pip install -r requirements.txt
 ```
 
-The program will:
-- Download historical data from **2000 to present**
-- Train and evaluate the model
-- Display the **R² score**
-- Show a plot of historical + predicted prices
+Or manually:
+
+```bash
+pip install yfinance pandas numpy matplotlib scikit-learn
+```
+
+> **`requirements.txt`**
+> ```
+> yfinance
+> pandas
+> numpy
+> matplotlib
+> scikit-learn
+> ```
 
 ---
 
-## 📊 Example Output
+## 🚀 Usage
+
+```bash
+python stock_predictor.py
+```
+
+You'll be prompted to enter a stock symbol:
 
 ```
-Model R-squared: 0.9994
+Enter the stock symbol (e.g., AAPL for Apple): TSLA
 ```
 
-The chart will show:
-- 🟡 **Yellow line** — Historical closing prices
-- ⚫ **Black line** — Predicted prices for the next 500 days
+The script will output:
+
+```
+Model R-squared: 0.9984
+
+[Chart window opens]
+```
+
+### Supported Ticker Examples
+
+| Symbol | Company |
+|--------|---------|
+| `AAPL` | Apple Inc. |
+| `TSLA` | Tesla Inc. |
+| `GOOGL` | Alphabet Inc. |
+| `MSFT` | Microsoft Corp. |
+| `AMZN` | Amazon.com Inc. |
+| `RELIANCE.NS` | Reliance Industries (NSE) |
+| `TCS.NS` | Tata Consultancy Services (NSE) |
+
+> 💡 For Indian stocks, append `.NS` (NSE) or `.BO` (BSE) to the ticker symbol.
 
 ---
 
-## 📁 Project Structure
+## 📊 Output
 
-```
-stock-price-predictor/
-├── stock_prediction.py   # Main script
-├── requirements.txt      # Python dependencies
-├── .gitignore            # Files to ignore in Git
-└── README.md             # Project documentation
-```
+The script generates a chart with:
+
+- 🔵 **Blue line** — Historical closing prices
+- 🔴 **Red dashed line** — Predicted future prices (500 days)
 
 ---
 
-## ⚠️ Disclaimer
+## ⚠️ Limitations
+
+- Linear Regression is a **simple baseline** — predictions can diverge over long horizons
+- Iterative forecasting **accumulates errors** with each step
+- Does **not factor in** earnings, news, or macroeconomic events
+- High R² score reflects price continuity, not true predictive power
+
+---
+
+## 📜 Disclaimer
 
 > This project is for **educational purposes only**.  
-> Stock price predictions from this model should **not** be used for real financial decisions.  
-> Linear Regression is a simple model and does not account for market volatility, news events, or economic factors.
+> It is **not financial advice**. Do not make investment decisions based on this tool's output.  
+> Past stock performance does not guarantee future results.
 
 ---
 
 ## 📄 License
 
-This project is open source and available under the [MIT License](LICENSE).
+This project is licensed under the [MIT License](LICENSE).
+
+---
+
+<p align="center">Made with ❤️ and Python</p>
